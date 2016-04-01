@@ -8,4 +8,4 @@ lasttemp = temperature
 t1 = lasttemp / 10000
 t2 = (lasttemp >= 0 and lasttemp % 10000) or (10000 - lasttemp % 10000)
 tempout=(string.format("%2d", t1) .. "." .. string.sub(t2, 1, 1))
-print("Temperature: "..tempout.."'C")
+--print("Temperature: "..tempout.."'C")
