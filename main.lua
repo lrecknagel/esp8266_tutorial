@@ -2,30 +2,38 @@
 
 tempout = 0 -- Initialize value that holds temp
 
-tmr.alarm(1, 2000, 1, function() -- Do every 10 minutes
+tmr.alarm(1, 2000, 1, function() -- Do every 1 minute
 	dofile("ds.lua")
 	tmr.wdclr()
 end)
 
 srv = net.createServer(net.TCP)
+
 srv:listen(80, function(conn)
-	conn:on("receive", function(conn, payload)
-		print(payload)
-		conn:send('HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nCache-Control: private, no-store\r\n\r\n')
-		conn:send('<!DOCTYPE HTML>')
-		conn:send('<html lang="en">')
-		conn:send('<head>')
-		conn:send('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">')
-		conn:send('<meta http-equiv="refresh" content="60">')
-		conn:send('<meta name="viewport" content="width=device-width, initial-scale=1">')
-		conn:send('<title>(ESP8266 & DS18B20)</title>')
-		conn:send('</head>')
-		conn:send('<body>')
-		conn:send('<h1>(ESP8266 & DS18B20)</h1>')
-		conn:send('<h2>')
-		conn:send('<input style="text-align: center" type="text" size=4 name="p" value="' .. tempout .. '"> C <br><br>')
-		conn:send('</h2>')
-		conn:send('</body></html>')
+	conn:on("receive", function(conn, req)
+
+		local buf = "";
+    local _, _, method, path, vars = string.find(req, "([A-Z]+) (.+)?(.+) HTTP");
+    if(method == nil)then
+        _, _, method, path = string.find(req, "([A-Z]+) (.+) HTTP");
+    end
+    local _GET = {}
+    if (vars ~= nil)then
+        for k, v in string.gmatch(vars, "(%w+)=(%w+)&*") do
+            _GET[k] = v
+        end
+    end
+
+		if (path == "/temp") then
+			conn:send('HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nCache-Control: private, no-store\r\n\r\n')
+			conn:send(tempout)
+		end
+
+		if (path == "/") then
+			conn:send('HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nCache-Control: private, no-store\r\n\r\n')
+			conn:send("<html><head></head><body><h3>Welcome to esp8266 temperature server</h3></body></html>")
+		end
+
 		conn:close()
 		collectgarbage()
 	end)
