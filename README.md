@@ -62,8 +62,5 @@
 
 ## MISC
 
-* If any of the tools are no longer available, you can hopefully download a copy (maybe old) here:
-  * https://dl.dropboxusercontent.com/u/13285300/esp8266_tools.zip
-
 * Further reading:
   * https://github.com/nodemcu/nodemcu-firmware
